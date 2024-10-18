@@ -5,6 +5,13 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "alembic>=1.13.3",
     "fastapi>=0.115.2",
     "pydantic-settings>=2.6.0",
+    "sqlmodel>=0.0.22",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "fastapi-cli>=0.0.5",
 ]
