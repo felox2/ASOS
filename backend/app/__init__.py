@@ -1,3 +1,3 @@
 from .config import settings
 
-print(settings.model_dump())
+# print(settings.model_dump())
