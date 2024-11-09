@@ -28,7 +28,7 @@ class User(UserBase, table=True):
 
 
 class UserPublic(UserBase):
-    uid: str
+    uid: uuid.UUID
 
 
 class UserCreate(UserBase):

@@ -1,0 +1,52 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+
+  storage:
+    image: chrislusf/seaweedfs:3.72
+    command: server -filer -s3 -s3.config=/etc/seaweedfs/s3.config.json -volume.max=0 -dir=/data -master.volumeSizeLimitMB=1024
+    volumes:
+      - ./infrastructure/seaweedfs/filer.toml:/etc/seaweedfs/filer.toml:ro
+      - ./infrastructure/seaweedfs/s3.config.json:/etc/seaweedfs/s3.config.json:ro
+    ports:
+      - '9333:9333' # Master port
+      - '8888:8888' # Filer port
+      - '8333:8333' # S3 port
+
+  nginx:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./infrastructure/nginx/conf.d/:/etc/nginx/conf.d/:ro
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # prometheus:
+  #   image: prom/prometheus
+  #   volumes:
+  #     - ./infrastructure/prometheus:/etc/prometheus
+  #   command:
+  #     - "--config.file=/etc/prometheus/prometheus.yml"
+  #     - "--storage.tsdb.path=/prometheus"
+  #     - "--web.enable-lifecycle"
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+
+  # grafana:
+  #   image: grafana/grafana
+  #   volumes:
+  #     - ./infrastructure/grafana/grafana.ini:/etc/grafana/grafana.ini
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SERVER_ROOT_URL=grafana.${APP_URL}
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
