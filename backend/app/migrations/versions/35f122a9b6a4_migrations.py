@@ -1,8 +1,8 @@
 """migrations
 
-Revision ID: b881c07fd16f
+Revision ID: 35f122a9b6a4
 Revises: 4992b80dc3bc
-Create Date: 2024-11-10 01:52:52.442519
+Create Date: 2024-11-10 12:50:44.803964
 
 """
 import sqlmodel
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b881c07fd16f'
+revision: str = '35f122a9b6a4'
 down_revision: Union[str, None] = '4992b80dc3bc'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -45,12 +45,21 @@ def upgrade() -> None:
     sa.Column('id', sa.Uuid(), nullable=False),
     sa.Column('user_id', sa.Uuid(), nullable=True),
     sa.Column('session_id', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('status', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('modified_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_cart_session_id'), 'cart', ['session_id'], unique=False)
+    op.create_table('order',
+    sa.Column('id', sa.Uuid(), nullable=False),
+    sa.Column('user_id', sa.Uuid(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('modified_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('product',
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=500), nullable=True),
@@ -81,6 +90,15 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['product_id'], ['product.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('orderitem',
+    sa.Column('id', sa.Uuid(), nullable=False),
+    sa.Column('order_id', sa.Uuid(), nullable=False),
+    sa.Column('product_id', sa.Uuid(), nullable=False),
+    sa.Column('quantity', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['order_id'], ['order.id'], ),
+    sa.ForeignKeyConstraint(['product_id'], ['product.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('photo',
     sa.Column('id', sa.Uuid(), nullable=False),
     sa.Column('url', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
@@ -98,10 +116,12 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_user_email'), table_name='user')
     op.drop_column('user', 'is_admin')
     op.drop_table('photo')
+    op.drop_table('orderitem')
     op.drop_table('cartitem')
     op.drop_table('associationproductcategory')
     op.drop_index(op.f('ix_product_name'), table_name='product')
     op.drop_table('product')
+    op.drop_table('order')
     op.drop_index(op.f('ix_cart_session_id'), table_name='cart')
     op.drop_table('cart')
     op.drop_index(op.f('ix_category_name'), table_name='category')

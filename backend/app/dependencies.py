@@ -50,11 +50,27 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         )
     except jwt.InvalidTokenError:
         raise credentials_exception
+    
+
+class UserOrSession:
+    def __init__(self, user: User = None, session_id: str = None):
+        self.user = user
+        self.session_id = session_id
+
 
 
 async def get_current_user_or_session(
     request: Request, db: Session = Depends(get_session)
-) -> Union[UserTokenData, str]:
+):
+    token = request.headers.get("Authorization")
+    if token:
+        try:
+            token = token.split(" ")[1]  
+            user = await get_current_user(token)
+            return UserOrSession(user=user)
+        except Exception:
+            pass  
+
     session_id = request.cookies.get("session_id")
     if not session_id:
         session_id = str(uuid.uuid4())
@@ -62,13 +78,8 @@ async def get_current_user_or_session(
     else:
         request.state.session_id = session_id
 
-    user = None
-    if "user_id" in request.cookies:
-        user_id = request.cookies["user_id"]
-        user = db.get(User, user_id)
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-    return user or session_id
+
+    return UserOrSession(session_id=session_id)
 
 DbSession = Annotated[Session, Depends(get_session)]
 CurrentUser = Annotated[UserTokenData, Depends(get_current_user)]

@@ -30,6 +30,8 @@ class Product(ProductBase, table=True):
     brand: Optional["Brand"] = Relationship(back_populates="products")
     photos: List[Photo] = Relationship(back_populates="product")
     cart_items: List["CartItem"] = Relationship(back_populates="product") 
+    order_items: List["OrderItem"] = Relationship(back_populates="product")
+
 
 
 class ProductPublic(ProductBase):
@@ -60,5 +62,6 @@ class ProductCreate(SQLModel):
 from .brand import Brand
 from .brand import BrandPublic
 from .cart import CartItem
+from .order import OrderItem
 
 

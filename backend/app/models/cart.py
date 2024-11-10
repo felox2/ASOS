@@ -18,6 +18,7 @@ class Cart(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     user_id: Optional[uuid.UUID] = Field(default=None, foreign_key="user.id")
     session_id: Optional[str] = Field(default=None, index=True)
+    status: str = Field(default="active")
     created_at: datetime = Field(default_factory=datetime.now)
     modified_at: datetime = Field(default_factory=datetime.now)
     items: List["CartItem"] = Relationship(back_populates="cart")
@@ -41,6 +42,7 @@ class CartRead(SQLModel):
 class CartItemCreate(SQLModel):
     product_id: uuid.UUID
     quantity: int = 1
+    status: str = "active"
 
 
 class CartItemRead(SQLModel):

@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Optional, Self
+from typing import Optional, Self, List
 
 from pydantic import BaseModel, EmailStr, model_validator
 from pydantic import Field as PydanticField
@@ -27,6 +27,7 @@ class User(UserBase, table=True):
     created_at: datetime = Field(default=datetime.now())
     modified_at: datetime = Field(default=datetime.now())
     cart: "Cart" = Relationship(back_populates="user")
+    orders: List["Order"] = Relationship(back_populates="user")
 
 
 class UserPublic(UserBase):
@@ -57,3 +58,4 @@ class Session(SQLModel, table=True):
     modified_at: datetime = Field(default=datetime.now())
 
 from .cart import Cart
+from .order import Order
