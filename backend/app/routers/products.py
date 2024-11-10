@@ -11,10 +11,10 @@ from ..helpers.s3_connect import S3Connect
 from sqlalchemy.sql.expression import delete
 import uuid
 
-router = APIRouter(prefix="/products", tags=["products"])
+router = APIRouter(prefix="/api/products", tags=["products"])
 
 
-@router.get("/", response_model=List[ProductPublic])
+@router.get("", response_model=List[ProductPublic])
 async def read_products(
     db: DbSession = None,
     page: int = Query(1, ge=1),
@@ -59,14 +59,15 @@ async def read_products(
 
         brand_query = select(Brand).where(Brand.id == product.brand_id)
         brand = db.exec(brand_query).first()
-        product_dict['brand'] = brand.model_dump()
+        if brand is not None:
+            product_dict['brand'] = brand.model_dump()
     
 
         response_products.append(ProductPublic(**product_dict))
     
     return response_products
 
-@router.post("/", response_model=ProductPublic, dependencies=[Depends(admin_required)])
+@router.post("", response_model=Product)
 async def create_product(
     name: str = Form(...),
     description: Optional[str] = Form(None),
@@ -87,7 +88,7 @@ async def create_product(
 
     product = Product.from_orm(product_data)
 
-    url = S3Connect.upload_fileobj(photo.file, photo.filename)
+    url = S3Connect.uploadFile(photo.file, photo.filename)
     product.photo = url
 
     db.add(product)
@@ -99,8 +100,11 @@ async def create_product(
             association = AssociationProductCategory(product_id=product.id, category_id=category_id)
             db.add(association)
         db.commit()
-        
+
     return product
+    
+
+
 
 @router.get("/{product_id}", response_model=ProductPublic)
 async def read_product(product_id: uuid.UUID, db: DbSession):
@@ -118,12 +122,13 @@ async def read_product(product_id: uuid.UUID, db: DbSession):
 
     brand_query = select(Brand).where(Brand.id == product.brand_id)
     brand = db.exec(brand_query).first()
-    product_dict['brand'] = brand.model_dump()
+    if brand is not None:
+        product_dict['brand'] = brand.model_dump()
 
     return ProductPublic(**product_dict)
 
 
-@router.put("/{product_id}", response_model=ProductPublic, dependencies=[Depends(admin_required)])
+@router.put("/{product_id}", response_model=Product)
 async def update_product(
     product_id: uuid.UUID,
     name: Optional[str] = Form(None),
@@ -146,7 +151,7 @@ async def update_product(
         if stock_quantity is not None:
             product.stock_quantity = stock_quantity
         if photo is not None:
-            url = S3Connect.upload_fileobj(photo.file, photo.filename)
+            url = S3Connect.uploadFile(photo.file, photo.filename)
             product.photo = url
         if brand_id is not None:
             product.brand_id = brand_id
@@ -162,10 +167,17 @@ async def update_product(
         db.refresh(product)
     return product
 
-@router.delete("/{product_id}", response_model=ProductPublic, dependencies=[Depends(admin_required)])
+@router.delete("/{product_id}", response_model=Product)
 async def delete_product(product_id: uuid.UUID, db: DbSession):
     product = db.exec(select(Product).where(Product.id == product_id)).first()
-    if product:
-        db.delete(product)
-        db.commit()
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product not found"
+        )
+    
+    db.delete(product)
+    db.commit()
+
+    
     return product

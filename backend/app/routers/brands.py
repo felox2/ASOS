@@ -8,13 +8,12 @@ from ..middlewares.is_admin import admin_required
 from ..helpers.s3_connect import S3Connect
 from ..models.brand import Brand, BrandCreate, BrandPublic, BrandUpdate
 import uuid
-import shutil
-import os
 
 
-router = APIRouter(prefix="/brands", tags=["brands"])
 
-@router.get("/", response_model=List[BrandPublic])
+router = APIRouter(prefix="/api/brands", tags=["brands"])
+
+@router.get("", response_model=List[BrandPublic])
 async def read_brands(db: DbSession):
     brands = db.exec(select(Brand)).all()
     return brands
@@ -32,7 +31,7 @@ async def create_brand(
 
     brand = Brand.from_orm(brand_data)
 
-    url = S3Connect.upload_fileobj(photo.file, photo.filename)
+    url = S3Connect.uploadFile(photo.file, photo.filename)
 
     brand.photo = url
     
@@ -46,7 +45,7 @@ async def read_brand(brand_id: uuid.UUID, db: DbSession ):
     brand = db.exec(select(Brand).where(Brand.id == brand_id)).first()
     return brand
 
-@router.put("/{brand_id}", response_model=BrandPublic, dependencies=[Depends(admin_required)])
+@router.put("/{brand_id}", response_model=Brand)
 async def update_brand(
     brand_id: uuid.UUID,
     name: Optional[str] = Form(None),
@@ -61,7 +60,7 @@ async def update_brand(
         if description is not None:
             brand.description = description
         if photo is not None:
-            url = S3Connect.upload_fileobj(photo.file, photo.filename)
+            url = S3Connect.uploadFile(photo.file, photo.filename)
             brand.photo = url
 
         db.add(brand)
@@ -69,7 +68,7 @@ async def update_brand(
         db.refresh(brand)
     return brand
 
-@router.post("/", response_model=BrandPublic, dependencies=[Depends(admin_required)])
+@router.post("", response_model=Brand)
 async def create_brand(
     name: str = Form(...),
     description: Optional[str] = Form(None),
@@ -83,16 +82,16 @@ async def create_brand(
 
     brand = Brand.from_orm(brand_data)
 
-    url = S3Connect.upload_fileobj(photo.file, photo.filename)
+    url = S3Connect.uploadFile(photo.file, photo.filename)
 
-    brand.photo = url
+    brand.photo = "url"
     
     db.add(brand)
     db.commit()
     db.refresh(brand)
     return brand
 
-@router.delete("/{brand_id}", response_model=BrandPublic, dependencies=[Depends(admin_required)])
+@router.delete("/{brand_id}", response_model=Brand)
 async def delete_brand(brand_id: uuid.UUID, db: DbSession ):
     brand = db.exec(select(Brand).where(Brand.id == brand_id)).first()
     if brand:

@@ -11,15 +11,15 @@ import uuid
 import shutil
 import os
 
-router = APIRouter(prefix="/categories", tags=["categories"])
+router = APIRouter(prefix="/api/categories", tags=["categories"])
 
-@router.get("/", response_model=List[CategoryPublic])
+@router.get("", response_model=List[CategoryPublic])
 async def read_categories(db: DbSession):
     categories = db.exec(select(Category)).all()
     return categories
 
 
-@router.post("/", response_model=CategoryPublic, dependencies=[Depends(admin_required)])
+@router.post("", response_model=Category)
 async def create_category(
     name: str = Form(...),
     description: Optional[str] = Form(None),
@@ -33,7 +33,7 @@ async def create_category(
 
     category = Category.from_orm(category_data)
 
-    url = S3Connect.upload_fileobj(photo.file, photo.filename)
+    url = S3Connect.uploadFile(photo.file, photo.filename)
 
     category.photo = url
     
@@ -47,7 +47,7 @@ async def read_category(category_id: uuid.UUID, db: DbSession ):
     category = db.exec(select(Category).where(Category.id == category_id)).first()
     return category
 
-@router.put("/{category_id}", response_model=CategoryPublic, dependencies=[Depends(admin_required)])
+@router.put("/{category_id}", response_model=Category)
 async def update_category(
     category_id: uuid.UUID,
     name: Optional[str] = Form(None),
@@ -62,7 +62,7 @@ async def update_category(
         if description is not None:
             category.description = description
         if photo is not None:
-            url = S3Connect.upload_fileobj(photo.file, photo.filename)
+            url = S3Connect.uploadFile(photo.file, photo.filename)
             category.photo = url 
 
         db.add(category)
@@ -70,7 +70,7 @@ async def update_category(
         db.refresh(category)
     return category
 
-@router.delete("/{category_id}", response_model=CategoryPublic, dependencies=[Depends(admin_required)])
+@router.delete("/{category_id}", response_model=CategoryPublic)
 async def delete_category(category_id: uuid.UUID, db: DbSession ):
     category = db.exec(select(Category).where(Category.id == category_id)).first()
     if category:

@@ -11,7 +11,7 @@
     "test:e2e": "playwright test",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
-    "gen:api": "openapi-typescript http://localhost:8000/openapi.json -o ./src/types/api.ts"
+    "gen:api": "openapi-typescript http://127.0.0.1:8001/openapi.json -o ./src/types/api.ts"
   },
   "dependencies": {
     "@vueuse/core": "^11.1.0",
@@ -25,6 +25,7 @@
     "radix-vue": "^1.9.7",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
+    "vee-validate": "^4.14.7",
     "vue": "^3.5.12",
     "vue-i18n": "10",
     "vue-router": "^4.4.5"

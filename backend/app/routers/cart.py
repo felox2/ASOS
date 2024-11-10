@@ -7,9 +7,9 @@ from ..models.cart import Cart, CartRead, CartItem, CartItemCreate, CartItemRead
 from ..models.order import Order, OrderCreate, OrderItem, OrderItemCreate, OrderRead
 from ..dependencies import get_current_user_or_session, DbSession, UserOrSession
 
-router = APIRouter(prefix="/cart", tags=["cart"])
+router = APIRouter(prefix="/api/cart", tags=["cart"])
 
-@router.get("/", response_model=CartRead)
+@router.get("", response_model=CartRead)
 async def get_cart(
     current_user_or_session: UserOrSession = Depends(get_current_user_or_session),
     db: DbSession = None

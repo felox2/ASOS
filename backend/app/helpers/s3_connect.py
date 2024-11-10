@@ -1,6 +1,7 @@
 from app.config import settings
 from fastapi import HTTPException
 import boto3
+import uuid
 
 class S3Connect:
      def uploadFile(file, entity_instance_id=None):
@@ -18,11 +19,11 @@ class S3Connect:
             
             s3_client.upload_fileobj(
                 file.file if hasattr(file, 'file') else file,  
-                settings.settings.BUCKET,
+                settings.BUCKET,
                 file_name 
             )
 
-            return f"{settings.settings.EXTERNAL_STORAGE_URL}/{settings.settings.BUCKET}/{file_name}"
+            return f"{settings.EXTERNAL_STORAGE_URL}/{settings.BUCKET}/{file_name}"
         
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
