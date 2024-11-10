@@ -1,7 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import auth, users
+from .middlewares.session import SessionMiddleware
+
+from .routers import (
+    auth,
+    users,
+    categories,
+    products,
+    brands,
+    cart
+)
 
 origins = ["http://localhost:5173"]
 
@@ -15,5 +24,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(SessionMiddleware)
+
+
 app.include_router(auth.router)
 app.include_router(users.router)
+app.include_router(categories.router)
+app.include_router(products.router)
+app.include_router(brands.router)
+app.include_router(brands.router)
+app.include_router(cart.router)

@@ -40,6 +40,12 @@ class Settings(BaseSettings):
     DB_PORT: str | None = None
     DB_PATH: str | None = None
 
+    ACCESS_KEY_ID: str
+    ACCESS_KEY_SECRET: str
+    INTERNAL_STORAGE_URL: str
+    EXTERNAL_STORAGE_URL: str
+    BUCKET: str
+    
     @computed_field
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
@@ -55,6 +61,8 @@ class Settings(BaseSettings):
                 path=self.DB_PATH,
             )
         )
+    
+    
 
 
 settings = Settings()

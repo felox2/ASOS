@@ -4,7 +4,7 @@ from typing import Optional, Self
 
 from pydantic import BaseModel, EmailStr, model_validator
 from pydantic import Field as PydanticField
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, Relationship
 
 
 class UserBase(SQLModel):
@@ -20,15 +20,18 @@ class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     uid: uuid.UUID = Field(unique=True, index=True)
     password_hash: str = Field()
+    is_admin: bool = Field(default=False)    
 
     sessions: list["Session"] = Relationship(back_populates="user")
 
     created_at: datetime = Field(default=datetime.now())
     modified_at: datetime = Field(default=datetime.now())
+    cart: "Cart" = Relationship(back_populates="user")
 
 
 class UserPublic(UserBase):
     uid: uuid.UUID
+    is_admin: bool
 
 
 class UserCreate(UserBase):
@@ -52,3 +55,5 @@ class Session(SQLModel, table=True):
     expires_at: datetime = Field()
     created_at: datetime = Field(default=datetime.now())
     modified_at: datetime = Field(default=datetime.now())
+
+from .cart import Cart
