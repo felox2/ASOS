@@ -72,7 +72,7 @@ const handleFilter = async ({ categories, brands }: { categories: string[], bran
     <div class="flex gap-6">
       <FilterSidebar
         @filter="handleFilter"
-        class="hidden md:block"
+
       />
       
       <Card class="flex-1">
