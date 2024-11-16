@@ -48,24 +48,12 @@ const props = defineProps<{ product: Product }>()
       </div>
       <h2 class="text-xl font-semibold mt-4">{{ product.name }}</h2>
       <p class="text-gray-700">{{ product.description }}</p>
-      <p class="text-gray-900 font-bold">Price: ${{ product.price }}</p>
       <p class="text-gray-700">Stock: {{ product.stock_quantity }}</p>
-      <div class="brand-info flex items-center mt-4">
-        <div
-          class="brand-photo-container w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4"
-        >
-          <img
-            v-if="product?.brand?.photo"
-            :src="product.brand.photo"
-            alt="Brand photo"
-            class="brand-photo w-full h-full object-cover rounded-full"
-          />
-          <span v-else class="text-gray-500">No Image</span>
-        </div>
-        <p class="text-gray-900">{{ product.brand?.name }}</p>
+      <p class="text-gray-900 font-bold text-right">Price: ${{ product.price }}</p>
+      </RouterLink>
+      <div class="flex justify-end">  
+        <Button class="ml-auto mt-4">{{ t('toCart') }}</Button>
       </div>
-    </RouterLink>
-    <Button class="ml-auto mt-4">{{ t('toCart') }}</Button>
   </div>
 </template>
 

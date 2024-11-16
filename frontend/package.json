@@ -14,14 +14,17 @@
     "gen:api": "openapi-typescript http://127.0.0.1:8001/openapi.json -o ./src/types/api.ts"
   },
   "dependencies": {
+    "@radix-icons/vue": "^1.0.0",
     "@vueuse/core": "^11.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "embla-carousel-vue": "^8.3.1",
     "lodash-es": "^4.17.21",
     "lucide-vue-next": "^0.453.0",
     "openapi-fetch": "^0.13.0",
     "openapi-typescript-fetch": "^2.0.0",
     "pinia": "^2.2.4",
+    "radix-icons": "^1.0.0",
     "radix-vue": "^1.9.7",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
