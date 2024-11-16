@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import LogoutDialog from '@/components/dialogs/LogoutDialog.vue'
+import ProductSearch from '@/components/ProductSearch.vue'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -9,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
 import {
   Popover,
   PopoverContent,
@@ -33,7 +33,7 @@ const cartOpen = ref(false)
 
 <template>
   <header
-    class="sticky top-0 flex h-16 items-center gap-4 bg-background md:px-20 mx-auto max-w-7xl"
+    class="sticky top-0 flex h-16 items-center gap-4 bg-background mx-auto px-6 md:px-20 max-w-7xl"
   >
     <nav
       class="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6"
@@ -45,48 +45,11 @@ const cartOpen = ref(false)
         <span>EShop</span>
       </RouterLink>
     </nav>
-    <!-- <Sheet>
-      <SheetTrigger as-child>
-        <Button variant="outline" size="icon" class="shrink-0 md:hidden">
-          <Menu class="h-5 w-5" />
-          <span class="sr-only">Toggle navigation menu</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left">
-        <nav class="grid gap-6 text-lg font-medium">
-          <a href="#" class="flex items-center gap-2 text-lg font-semibold">
-            <span class="sr-only">EShop</span>
-          </a>
-          <a href="#" class="hover:text-foreground"> Dashboard </a>
-          <a href="#" class="text-muted-foreground hover:text-foreground">
-            Orders
-          </a>
-          <a href="#" class="text-muted-foreground hover:text-foreground">
-            Products
-          </a>
-          <a href="#" class="text-muted-foreground hover:text-foreground">
-            Customers
-          </a>
-          <a href="#" class="text-muted-foreground hover:text-foreground">
-            Analytics
-          </a>
-        </nav>
-      </SheetContent>
-    </Sheet> -->
 
     <div class="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-      <form class="mx-auto">
-        <div class="relative">
-          <Search
-            class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-          />
-          <Input
-            type="search"
-            placeholder="Search products..."
-            class="pl-8 sm:w-[300px] md:w-[200px] lg:w-[500px]"
-          />
-        </div>
-      </form>
+      <div class="mx-auto">
+        <ProductSearch />
+      </div>
 
       <div class="flex gap-2">
         <DropdownMenu v-if="authStore.user">

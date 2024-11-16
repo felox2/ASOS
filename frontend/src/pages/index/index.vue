@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FilterSidebar from '@/components/FilterSidebar.vue'
 import ProductTile from '@/components/ProductTile.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -6,14 +7,13 @@ import { client } from '@/lib/client'
 import { useFetchQuery } from '@/lib/useQuery'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import FilterSidebar from '@/components/FilterSidebar.vue' 
 
 const { t } = useI18n()
 const pageSize = 12
 
-const selectedFilters = ref<{ categories: string[], brands: string[] }>({
+const selectedFilters = ref<{ categories: string[]; brands: string[] }>({
   categories: [],
-  brands: []
+  brands: [],
 })
 
 const { data: products, reload: reloadProducts } = useFetchQuery({
@@ -59,22 +59,25 @@ const loadMore = async () => {
   products.value = [...products.value, ...response.data]
 }
 
-const handleFilter = async ({ categories, brands }: { categories: string[], brands: string[] }) => {
+const handleFilter = async ({
+  categories,
+  brands,
+}: {
+  categories: string[]
+  brands: string[]
+}) => {
   console.log(categories, brands)
   selectedFilters.value = { categories, brands }
-  products.value = [] 
-  await reloadProducts() 
+  products.value = []
+  await reloadProducts()
 }
 </script>
 
 <template>
-  <div class="container mx-auto p-4">
+  <div class="max-w-7xl w-full mx-auto p-4">
     <div class="flex gap-6">
-      <FilterSidebar
-        @filter="handleFilter"
+      <FilterSidebar @filter="handleFilter" />
 
-      />
-      
       <Card class="flex-1">
         <CardContent class="p-6">
           <div class="flex justify-center">

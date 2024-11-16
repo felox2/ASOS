@@ -27,6 +27,8 @@ async function logout() {
 
     await authStore.logout()
 
+    open.value = false
+
     router.push('/auth/login')
   } finally {
     loading.value = false
