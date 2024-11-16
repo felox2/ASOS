@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
     :disabled="disabled || loading"
   >
     <Loader2
+      v-if="loading"
       :class="
         cn(
           'absolute animate-spin pointer-events-none opacity-0',
