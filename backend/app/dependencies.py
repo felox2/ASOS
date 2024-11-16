@@ -1,17 +1,14 @@
 import uuid
 from typing import Annotated, Union
 
-from fastapi import Depends, HTTPException, Request
-from sqlmodel import Session
-
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import create_engine
 from sqlmodel import Session
 
 from .config import settings
-from .models.users import UserTokenData, User
+from .models.users import User, UserTokenData
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 engine = create_engine(
@@ -25,11 +22,15 @@ credentials_exception = HTTPException(
     headers={"WWW-Authenticate": "Bearer"},
 )
 
+
 def get_session():
     with Session(engine) as session:
         yield session
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> UserTokenData:
+
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)],
+) -> UserTokenData:
     try:
         payload = jwt.decode(
             token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
@@ -48,8 +49,13 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Use
     except jwt.InvalidTokenError:
         raise credentials_exception
 
+
 class UserOrSession:
-    def __init__(self, user: Union[UserTokenData, None] = None, session_id: Union[str, None] = None):
+    def __init__(
+        self,
+        user: Union[UserTokenData, None] = None,
+        session_id: Union[str, None] = None,
+    ):
         self.user = user
         self.session_id = session_id
 
@@ -60,11 +66,11 @@ async def get_current_user_or_session(
     token = request.headers.get("Authorization")
     if token:
         try:
-            token = token.split(" ")[1]  
+            token = token.split(" ")[1]
             user = await get_current_user(token)
             return UserOrSession(user=user)
         except Exception:
-            pass 
+            pass
 
     session_id = request.cookies.get("session_id")
     if not session_id:
@@ -74,6 +80,7 @@ async def get_current_user_or_session(
         request.state.session_id = session_id
 
     return UserOrSession(session_id=session_id)
+
 
 DbSession = Annotated[Session, Depends(get_session)]
 CurrentUser = Annotated[UserTokenData, Depends(get_current_user)]

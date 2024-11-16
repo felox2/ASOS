@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import ProductTile from '@/components/ProductTile.vue'
 import { Button } from '@/components/ui/button'
-import Card from '@/components/ui/card/Card.vue'
-import CardContent from '@/components/ui/card/CardContent.vue'
+import { Card, CardContent } from '@/components/ui/card'
 import { client } from '@/lib/client'
 import { useFetchQuery } from '@/lib/useQuery'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
 
@@ -56,7 +54,7 @@ const loadMore = async () => {
 <template>
   <div class="container mx-auto p-4 flex justify-center">
     <Card class="w-full max-w-6xl">
-      <CardContent>
+      <CardContent class="p-6">
         <div class="flex justify-center">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <ProductTile

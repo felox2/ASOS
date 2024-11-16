@@ -283,7 +283,6 @@ export interface components {
              * Format: binary
              */
             photo: string;
-            current_user?: components["schemas"]["User"];
         };
         /** Body_create_category_api_categories_post */
         Body_create_category_api_categories_post: {
@@ -296,7 +295,6 @@ export interface components {
              * Format: binary
              */
             photo: string;
-            current_user?: components["schemas"]["User"];
         };
         /** Body_create_product_api_products_post */
         Body_create_product_api_products_post: {
@@ -317,7 +315,6 @@ export interface components {
             brand_id?: string | null;
             /** Category Ids */
             category_ids?: string[] | null;
-            current_user?: components["schemas"]["User"];
         };
         /** Body_login_auth_login_post */
         Body_login_auth_login_post: {
@@ -345,7 +342,6 @@ export interface components {
             description?: string | null;
             /** Photo */
             photo?: string | null;
-            current_user?: components["schemas"]["User"];
         };
         /** Body_update_category_api_categories__category_id__put */
         Body_update_category_api_categories__category_id__put: {
@@ -355,7 +351,6 @@ export interface components {
             description?: string | null;
             /** Photo */
             photo?: string | null;
-            current_user?: components["schemas"]["User"];
         };
         /** Body_update_product_api_products__product_id__put */
         Body_update_product_api_products__product_id__put: {
@@ -373,7 +368,30 @@ export interface components {
             brand_id?: string | null;
             /** Category Ids */
             category_ids?: string[] | null;
-            current_user?: components["schemas"]["User"];
+        };
+        /** Brand */
+        Brand: {
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+            /** Photo */
+            photo?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id?: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at?: string;
+            /**
+             * Modified At
+             * Format: date-time
+             */
+            modified_at?: string;
         };
         /** BrandPublic */
         BrandPublic: {
@@ -388,29 +406,6 @@ export interface components {
             description?: string | null;
             /** Photo */
             photo?: string | null;
-        };
-        /** CartItem */
-        CartItem: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id?: string;
-            /**
-             * Cart Id
-             * Format: uuid
-             */
-            cart_id: string;
-            /**
-             * Product Id
-             * Format: uuid
-             */
-            product_id: string;
-            /**
-             * Quantity
-             * @default 1
-             */
-            quantity: number;
         };
         /** CartItemCreate */
         CartItemCreate: {
@@ -428,7 +423,7 @@ export interface components {
              * Status
              * @default active
              */
-            status: string;
+            status: string | null;
         };
         /** CartItemRead */
         CartItemRead: {
@@ -468,7 +463,31 @@ export interface components {
              */
             modified_at: string;
             /** Items */
-            items: components["schemas"]["CartItem"][];
+            items: components["schemas"]["CartItemRead"][];
+        };
+        /** Category */
+        Category: {
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+            /** Photo */
+            photo?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id?: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at?: string;
+            /**
+             * Modified At
+             * Format: date-time
+             */
+            modified_at?: string;
         };
         /** CategoryPublic */
         CategoryPublic: {
@@ -607,42 +626,6 @@ export interface components {
         TokenResponse: {
             /** Access Token */
             access_token: string;
-        };
-        /** User */
-        User: {
-            /**
-             * Email
-             * Format: email
-             */
-            email: string;
-            /** Name */
-            name: string;
-            /** Id */
-            id?: number | null;
-            /**
-             * Uid
-             * Format: uuid
-             */
-            uid: string;
-            /** Password Hash */
-            password_hash: string;
-            /**
-             * Is Admin
-             * @default false
-             */
-            is_admin: boolean;
-            /**
-             * Created At
-             * Format: date-time
-             * @default 2024-11-10T22:56:09.127461
-             */
-            created_at: string;
-            /**
-             * Modified At
-             * Format: date-time
-             * @default 2024-11-10T22:56:09.127461
-             */
-            modified_at: string;
         };
         /** UserCreate */
         UserCreate: {
@@ -880,7 +863,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CategoryPublic"];
+                    "application/json": components["schemas"]["Category"];
                 };
             };
             /** @description Validation Error */
@@ -946,7 +929,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CategoryPublic"];
+                    "application/json": components["schemas"]["Category"];
                 };
             };
             /** @description Validation Error */
@@ -969,11 +952,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["User"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -1138,11 +1117,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["User"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -1150,7 +1125,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProductPublic"];
+                    "application/json": components["schemas"]["Product"];
                 };
             };
             /** @description Validation Error */
@@ -1203,7 +1178,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["BrandPublic"];
+                    "application/json": components["schemas"]["Brand"];
                 };
             };
             /** @description Validation Error */
@@ -1269,7 +1244,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["BrandPublic"];
+                    "application/json": components["schemas"]["Brand"];
                 };
             };
             /** @description Validation Error */
@@ -1292,11 +1267,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["User"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -1304,7 +1275,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["BrandPublic"];
+                    "application/json": components["schemas"]["Brand"];
                 };
             };
             /** @description Validation Error */
@@ -1357,7 +1328,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CartItemRead"];
+                    "application/json": components["schemas"]["CartItemRead"] | null;
                 };
             };
             /** @description Validation Error */

@@ -18,7 +18,7 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 const router = useRouter()
 
-const open = defineModel<boolean>('open')
+const open = defineModel<boolean>('open', { default: true })
 const loading = ref(false)
 
 async function logout() {

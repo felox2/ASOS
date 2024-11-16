@@ -10,28 +10,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { useDialog } from '@/composables/useDialog'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
-import { Menu, Search, ShoppingCart, UserRound } from 'lucide-vue-next'
+import { Search, ShoppingCart, UserRound, X } from 'lucide-vue-next'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { RouterLink, RouterView } from 'vue-router'
 
-const { t } = useI18n()
+const { t, n } = useI18n()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
-const logoutDialogOpen = ref(false)
+const showLogoutDialog = useDialog(LogoutDialog)
 
-async function logout() {
-  logoutDialogOpen.value = true
-}
+const cartOpen = ref(false)
 </script>
 
 <template>
@@ -102,10 +99,13 @@ async function logout() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
+            <DropdownMenuItem :as="RouterLink" to="/settings">
+              {{ t('settings') }}
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem @click="logout">Logout</DropdownMenuItem>
+            <DropdownMenuItem @click="showLogoutDialog">
+              {{ t('logout') }}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -121,7 +121,7 @@ async function logout() {
           <span class="sr-only">Toggle user menu</span>
         </Button>
 
-        <Popover>
+        <Popover v-model:open="cartOpen">
           <PopoverTrigger as-child>
             <Button
               variant="secondary"
@@ -138,19 +138,59 @@ async function logout() {
               </div>
             </Button>
           </PopoverTrigger>
-          <PopoverContent class="w-80">
+          <PopoverContent class="w-96">
             <div>
-              <div>TODO: cart</div>
+              <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-medium">{{ t('cart') }}</h3>
 
-              <RouterLink to="/cart"> View Cart </RouterLink>
+                <RouterLink to="/cart" @click="cartOpen = false">
+                  {{ t('viewCart') }}
+                </RouterLink>
+              </div>
+              <div class="flex flex-col gap-2">
+                <div
+                  v-for="item in cartStore.items"
+                  class="flex gap-2 border-b pb-2"
+                >
+                  <img
+                    v-if="item.product?.photo"
+                    class="size-12 rounded aspect-square"
+                    :src="item.product?.photo"
+                  />
+
+                  <div class="w-full">
+                    <div class="flex justify-between w-full">
+                      <h4>{{ item.product?.name }}</h4>
+                      <Button
+                        class="p-0 size-5"
+                        variant="ghost"
+                        @click="cartStore.removeCartItem(item)"
+                      >
+                        <X class="size-4" />
+                      </Button>
+                    </div>
+                    <div class="flex justify-between items-center w-full">
+                      <span class="text-sm text-muted-foreground">
+                        {{ item.quantity }}x
+                      </span>
+                      <span>{{ n(item.product?.price || 0, 'currency') }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex justify-between">
+                  <span>{{ t('total') }}</span>
+                  <span class="font-semibold">
+                    {{ n(cartStore.total, 'currency') }}
+                  </span>
+                </div>
+              </div>
             </div>
           </PopoverContent>
         </Popover>
       </div>
     </div>
   </header>
-
-  <LogoutDialog v-model:open="logoutDialogOpen" />
 
   <main class="p-4">
     <RouterView></RouterView>

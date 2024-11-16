@@ -6,4 +6,22 @@ export const i18n = createI18n({
   fallbackLocale: 'en',
   legacy: false,
   messages: { en },
+  numberFormats: {
+    en: {
+      currency: {
+        style: 'currency',
+        currency: 'eur',
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2,
+      },
+    },
+    sk: {
+      currency: {
+        style: 'currency',
+        currency: 'eur',
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2,
+      },
+    },
+  },
 })

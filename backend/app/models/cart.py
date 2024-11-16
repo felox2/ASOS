@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
-from sqlmodel import Field, SQLModel, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class CartItem(SQLModel, table=True):
@@ -36,13 +36,13 @@ class CartRead(SQLModel):
     session_id: Optional[str]
     created_at: datetime
     modified_at: datetime
-    items: List["CartItem"]
+    items: List["CartItemRead"]
 
 
 class CartItemCreate(SQLModel):
     product_id: uuid.UUID
     quantity: int = 1
-    status: str = "active"
+    status: Optional[str] = "active"
 
 
 class CartItemRead(SQLModel):
@@ -51,7 +51,6 @@ class CartItemRead(SQLModel):
     quantity: int
     product: Optional["Product"]
 
+
 from .product import Product
 from .users import User
-
-
