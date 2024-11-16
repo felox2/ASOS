@@ -60,7 +60,6 @@ function addToCart() {
       </div>
       <h2 class="text-xl font-semibold mt-4">{{ product.name }}</h2>
       <p class="text-muted-foreground">{{ product.description }}</p>
-      <p class="text-muted-foreground">Stock: {{ product.stock_quantity }}</p>
       <!-- <p class="text-gray-900 font-bold text-right">
         Price: ${{ product.price }}
       </p> -->

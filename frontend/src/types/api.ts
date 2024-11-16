@@ -980,8 +980,8 @@ export interface operations {
                 page?: number;
                 page_size?: number;
                 search?: string | null;
-                category_id?: string | null;
-                brand_id?: string | null;
+                category_ids?: string[] | null;
+                brand_ids?: string[] | null;
             };
             header?: never;
             path?: never;

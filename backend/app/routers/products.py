@@ -20,8 +20,8 @@ async def read_products(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     search: Optional[str] = Query(None),
-    category_id: Optional[uuid.UUID] = Query(None),
-    brand_id: Optional[uuid.UUID] = Query(None)
+    category_ids: Optional[List[uuid.UUID]] = Query(None),
+    brand_ids: Optional[List[uuid.UUID]] = Query(None)
 ):
     offset = (page - 1) * page_size
     query = select(Product)
@@ -35,13 +35,13 @@ async def read_products(
             )
         )
     
-    if category_id:
+    if category_ids:
         query = query.join(AssociationProductCategory).where(
-            AssociationProductCategory.category_id == category_id
+            AssociationProductCategory.category_id.in_(category_ids)
         )
     
-    if brand_id:
-        query = query.where(Product.brand_id == brand_id)
+    if brand_ids:
+        query = query.where(Product.brand_id.in_(brand_ids))
     
     products = db.exec(query.offset(offset).limit(page_size)).all()
     
