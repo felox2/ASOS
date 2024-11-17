@@ -14,9 +14,13 @@ import {
   NumberFieldIncrement,
   NumberFieldInput,
 } from '@/components/ui/number-field'
+import { client } from '@/lib/client'
 import { useCartStore } from '@/stores/cart'
 import { X } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const { t, n } = useI18n()
 const cartStore = useCartStore()
@@ -29,6 +33,16 @@ function updateItemQuantity(item: any, quantity: number) {
     quantity,
   })
 }
+
+function order() {
+  client.POST('/api/cart/order').then((res) => {
+    cartStore.clear()
+    router.push('/thanks')
+  }).catch((err) => {
+    console.error(err)
+  })
+}
+
 </script>
 
 <template>
@@ -95,7 +109,7 @@ function updateItemQuantity(item: any, quantity: number) {
         </div>
       </CardContent>
       <CardFooter class="flex justify-end">
-        <Button :disabled="cartStore.count === 0">
+        <Button :disabled="cartStore.count === 0" @click="order">
           TODO: {{ t('checkout') }}
         </Button>
       </CardFooter>

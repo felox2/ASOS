@@ -92,6 +92,15 @@ export const useCartStore = defineStore('store', () => {
     items.value = data.items
   })
 
+  async function clear() {
+    const { data } = await client.GET('/api/cart')
+    if (!data) {
+      return
+    }
+
+    items.value = data.items
+  }
+
   return {
     items,
     count,
@@ -100,5 +109,6 @@ export const useCartStore = defineStore('store', () => {
     addCartItem,
     updateCartItem,
     removeCartItem,
+    clear
   }
 })

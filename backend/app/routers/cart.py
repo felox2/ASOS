@@ -150,7 +150,7 @@ async def create_order_from_cart(
 
     order = OrderCreate(
         user_id=current_user_or_session.user.uid
-        if current_user_or_session.is_user()
+        if current_user_or_session.user
         else None
     )
     db_order = Order.from_orm(order)
