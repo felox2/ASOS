@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils'
 import { CircleAlert } from 'lucide-vue-next'
 import { ErrorMessage } from 'vee-validate'
-import { HTMLAttributes, toValue } from 'vue'
+import { type HTMLAttributes, toValue } from 'vue'
 
 interface Props {
   name: string

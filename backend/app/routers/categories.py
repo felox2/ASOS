@@ -33,7 +33,7 @@ async def create_category(
 
     category = Category.from_orm(category_data)
 
-    url = S3Connect.uploadFile(photo.file, photo.filename)
+    url = S3Connect.uploadFile(photo.file)
 
     category.photo = url
     
@@ -62,7 +62,7 @@ async def update_category(
         if description is not None:
             category.description = description
         if photo is not None:
-            url = S3Connect.uploadFile(photo.file, photo.filename)
+            url = S3Connect.uploadFile(photo.file)
             category.photo = url 
 
         db.add(category)

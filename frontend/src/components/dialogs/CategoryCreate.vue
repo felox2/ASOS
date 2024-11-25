@@ -122,30 +122,30 @@ const form = ref({
 })
 
 const handleFileUpload = (event: Event) => {
-	const target = event.target as HTMLInputElement
+	var target = event.target as HTMLInputElement
 	if (target.files && target.files.length > 0) {
 		form.value.photo = target.files[0]
+		target.files = null
 	}
 }
 
 const submitForm = async () => {
-	const formData = new FormData()
+	var formData = new FormData()
 	formData.append('name', form.value.name)
 	formData.append('description', form.value.description)
 	if (form.value.photo) {
 		formData.append('photo', form.value.photo)
 	}
 
-	// TODO: make this with jwt token
-	await client.POST('/api/categories', {
+	client.POST('/api/categories', {
 		body: formData as any,
-    }).catch((error) => {
-	console.log(error)
-	}).then(() => {
+    }).then(() => {
 		isOpen.value = false
 		emit('created')
 	})
-
+	.catch((error) => {
+	console.log(error)
+	})
 }
 
 function required(value: any) {

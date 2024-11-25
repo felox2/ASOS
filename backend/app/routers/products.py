@@ -88,7 +88,7 @@ async def create_product(
 
     product = Product.from_orm(product_data)
 
-    url = S3Connect.uploadFile(photo.file, photo.filename)
+    url = S3Connect.uploadFile(photo.file)
     product.photo = url
 
     db.add(product)
@@ -151,7 +151,7 @@ async def update_product(
         if stock_quantity is not None:
             product.stock_quantity = stock_quantity
         if photo is not None:
-            url = S3Connect.uploadFile(photo.file, photo.filename)
+            url = S3Connect.uploadFile(photo.file)
             product.photo = url
         if brand_id is not None:
             product.brand_id = brand_id

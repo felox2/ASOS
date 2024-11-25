@@ -265,16 +265,16 @@ const submitForm = async () => {
 		formData.append('category_ids', id)
 	})
 
-	// TODO: make this with jwt token
 	await client.POST('/api/products', {
 		body: formData as any,
-	}).catch((error) => {
-		console.error(error)
 	}).then(() => {
 		isOpen.value = false
 		emit('created')
+	}).catch((error) => {
+		console.error(error)
 	})
 
+	isOpen.value = false
 }
 
 function required(value: any) {

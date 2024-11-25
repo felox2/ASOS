@@ -13,6 +13,8 @@ from ..models.cart import (
     CartItemRead,
     CartRead,
 )
+
+from ..models.product import Product
 from ..models.order import Order, OrderCreate, OrderItem, OrderItemCreate, OrderRead
 
 router = APIRouter(prefix="/api/cart", tags=["cart"])
@@ -159,6 +161,12 @@ async def create_order_from_cart(
     db.refresh(db_order)
 
     for cart_item in cart.items:
+        product = db.query(Product).filter(Product.id == cart_item.product_id).first()
+        if product is None:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        product.stock_quantity -= cart_item.quantity
+
         order_item = OrderItem(
             order_id=db_order.id,
             product_id=cart_item.product_id,

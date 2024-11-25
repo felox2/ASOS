@@ -31,7 +31,7 @@ async def create_brand(
 
     brand = Brand.from_orm(brand_data)
 
-    url = S3Connect.uploadFile(photo.file, photo.filename)
+    url = S3Connect.uploadFile(photo.file)
 
     brand.photo = url
     
@@ -60,7 +60,7 @@ async def update_brand(
         if description is not None:
             brand.description = description
         if photo is not None:
-            url = S3Connect.uploadFile(photo.file, photo.filename)
+            url = S3Connect.uploadFile(photo.file)
             brand.photo = url
 
         db.add(brand)
@@ -82,7 +82,7 @@ async def create_brand(
 
     brand = Brand.from_orm(brand_data)
 
-    url = S3Connect.uploadFile(photo.file, photo.filename)
+    url = S3Connect.uploadFile(photo.file)
 
     brand.photo = "url"
     

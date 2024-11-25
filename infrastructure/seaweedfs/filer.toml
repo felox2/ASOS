@@ -2,4 +2,4 @@
 # similar to leveldb2.
 # each bucket has its own meta store.
 enabled = true
-dir = "/data/filerldb3"                    # directory to store level db files
+dir = "/data/filerldb3"

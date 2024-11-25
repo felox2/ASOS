@@ -1,4 +1,5 @@
 <template>
+    <AdminNavBar />
     <div class="flex items-center justify-center ">
         <Card class="mx-10 mt-2 w-full">
             <CardHeader>
@@ -34,6 +35,7 @@ import { useRouter } from 'vue-router'
 import { client } from '@/lib/client'
 import { useFetchQuery } from '@/lib/useQuery'
 import CategoryCreate from '@/components/dialogs/CategoryCreate.vue'
+import AdminNavBar from '@/components/AdminNavBar.vue'
 
 
 const { t } = useI18n()

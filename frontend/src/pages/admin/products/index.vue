@@ -1,4 +1,5 @@
 <template>
+	<AdminNavBar />
 	<div class="flex items-center justify-center ">
 		<Card class="mx-10 mt-2 w-full">
 			<CardHeader>
@@ -12,6 +13,7 @@
 					:onAction="deleteProduct"
 					:createAction="createProduct"
 					redirect="/admin/products"
+					redirectKey="id"
 
 
 				/>
@@ -21,7 +23,7 @@
 	</div>
 
 
-	<ProductCreateFrom v-model="isOpen" :created="reloadProducts"/>
+	<ProductCreateFrom v-model="isOpen" />
 
 </template>
 
@@ -35,6 +37,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { client } from '@/lib/client'
 import { useFetchQuery } from '@/lib/useQuery'
+import AdminNavBar from '@/components/AdminNavBar.vue'
 
 
 const { t } = useI18n()
@@ -73,6 +76,11 @@ function deleteProduct(row: any) {
 
 function createProduct() {
 	isOpen.value = true
+}
+
+function createdNew(){
+	isOpen.value = false
+	reloadProducts()
 }
 
 </script>
