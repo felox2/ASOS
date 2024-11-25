@@ -53,9 +53,13 @@
         <p class="text-gray-500 font-bold mb-4">
           {{ t('price') }}: {{ product.price }} eur
         </p>
-        <p class="text-gray-700 mb-4">
-          {{ t('stock') }} {{ product.stock_quantity }}
-        </p>
+        <span class="flex items-center mb-4">
+          <p class="font-medium text-base mr-2">
+            {{ t('stock') }}: {{ tweenedStockAmount.value.toFixed(0) }}
+          </p>
+          <img src="@/assets/live-dot.gif" width="20px"/>
+          <p class="font-bold text-sm">LIVE</p>
+        </span>
         <Button
           :disabled="isOutOfStock(product.stock_quantity)"
           class="absolute right-0"
@@ -100,9 +104,10 @@ import {
 import { useFetchQuery } from '@/composables/useQuery'
 import { client } from '@/lib/client'
 import { watchOnce } from '@vueuse/core'
-import { defineProps, ref, watch } from 'vue'
+import { defineProps, ref, watch, reactive, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
+import gsap from 'gsap'
 
 const { t } = useI18n()
 
@@ -163,4 +168,37 @@ const selectPhoto = (photo: any) => {
   if (!photo) return
   selectedPhoto.value = photo
 }
+
+const tweenedStockAmount = reactive({ value: 0 })
+
+watch(product, (newProduct) => {
+  gsap.to(tweenedStockAmount, {
+    value: newProduct?.stock_quantity || 0,
+    duration: 2,
+  })
+}, { deep: true })
+
+const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/api/products/${route.params.id}/stock`)
+
+eventSource.onopen = () => {
+    console.log('EventSource connected')
+}
+
+eventSource.addEventListener('stockUpdate', function (event) {
+  if (product.value) {
+    const newQuantity = parseInt(event.data)
+    product.value.stock_quantity = newQuantity
+  }
+});
+
+eventSource.onerror = (error) => {
+    console.error('EventSource failed', error)
+    eventSource.close()
+}
+
+onBeforeUnmount(() => {
+  eventSource.close()
+  console.log("Closed event source")
+})
+
 </script>

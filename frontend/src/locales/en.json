@@ -1,3 +1,5 @@
 {
-  "login": "Login"
+  "login": "Login",
+  "stock": "Stock",
+  "price": "Price"
 }
