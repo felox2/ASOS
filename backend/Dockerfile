@@ -13,5 +13,7 @@ COPY .env.prod /app/.env
 ENV VIRTUAL_ENV=/app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 
+RUN alembic upgrade head
+
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--root-path", "/api"]
 EXPOSE 8080
