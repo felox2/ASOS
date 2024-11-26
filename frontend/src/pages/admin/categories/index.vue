@@ -13,6 +13,7 @@
                     :onAction="deleteCategory"
                     :createAction="createCategory"
                     redirect="/admin/categories"
+                    redirectKey="id"
                 />
             </CardContent>
         </Card>

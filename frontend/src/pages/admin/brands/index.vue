@@ -13,6 +13,7 @@
                     :onAction="deleteBrand"
                     :createAction="createBrand"
                     redirect="/admin/brands"
+                    redirectKey="id"
                 />
             </CardContent>
         </Card>
