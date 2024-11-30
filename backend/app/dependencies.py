@@ -45,9 +45,18 @@ async def get_current_user(
             uid=uuid.UUID(user_uid),
             email=payload.get("email"),
             name=payload.get("name"),
+            is_admin=payload.get("is_admin"),
         )
     except jwt.InvalidTokenError:
         raise credentials_exception
+
+
+def check_admin(user: Annotated[UserTokenData, Depends(get_current_user)]):
+    if not user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
+        )
+    return user
 
 
 class UserOrSession:
@@ -85,3 +94,4 @@ async def get_current_user_or_session(
 DbSession = Annotated[Session, Depends(get_session)]
 CurrentUser = Annotated[UserTokenData, Depends(get_current_user)]
 CurrentUserOrSession = Annotated[UserOrSession, Depends(get_current_user_or_session)]
+AdminUser = Annotated[UserTokenData, Depends(check_admin)]

@@ -14,13 +14,14 @@ class UserBase(SQLModel):
 
 class UserTokenData(UserBase):
     uid: uuid.UUID
+    is_admin: bool
 
 
 class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     uid: uuid.UUID = Field(unique=True, index=True)
     password_hash: str = Field()
-    is_admin: bool = Field(default=False)    
+    is_admin: bool = Field(default=False)
 
     sessions: list["Session"] = Relationship(back_populates="user")
 

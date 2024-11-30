@@ -1,17 +1,27 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query, Form, File, UploadFile
-from fastapi.responses import StreamingResponse
-from sqlmodel import select
-from sqlalchemy import or_
-from typing import List, Optional
-from ..models.product import Product, ProductPublic, ProductCreate, Photo
-from ..models.category import AssociationProductCategory
-from ..models.brand import Brand, BrandPublic
-from ..dependencies import CurrentUser, DbSession
-from ..middlewares.is_admin import admin_required
-from ..helpers.s3_connect import S3Connect
-from sqlalchemy.sql.expression import delete
 import uuid
 from asyncio import sleep
+from typing import List, Optional
+
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    UploadFile,
+    status,
+)
+from fastapi.responses import StreamingResponse
+from sqlalchemy import or_
+from sqlalchemy.sql.expression import delete
+from sqlmodel import select
+
+from ..dependencies import AdminUser, CurrentUser, DbSession
+from ..helpers.s3_connect import S3Connect
+from ..models.brand import Brand
+from ..models.category import AssociationProductCategory
+from ..models.product import Photo, Product, ProductCreate, ProductPublic
 
 router = APIRouter(prefix="/api/products", tags=["products"])
 
@@ -25,7 +35,7 @@ async def read_products(
     page_size: int = Query(10, ge=1, le=100),
     search: Optional[str] = Query(None),
     category_ids: Optional[List[uuid.UUID]] = Query(None),
-    brand_ids: Optional[List[uuid.UUID]] = Query(None)
+    brand_ids: Optional[List[uuid.UUID]] = Query(None),
 ):
     offset = (page - 1) * page_size
     query = select(Product)
@@ -33,10 +43,7 @@ async def read_products(
     if search:
         search_term = f"%{search}%"
         query = query.where(
-            or_(
-                Product.name.ilike(search_term),
-                Product.description.ilike(search_term)
-            )
+            or_(Product.name.ilike(search_term), Product.description.ilike(search_term))
         )
 
     if category_ids:
@@ -59,12 +66,12 @@ async def read_products(
         all_photos = []
         all_photos.extend(photo for photo in additional_photos)
 
-        product_dict['photos'] = all_photos
+        product_dict["photos"] = all_photos
 
         brand_query = select(Brand).where(Brand.id == product.brand_id)
         brand = db.exec(brand_query).first()
         if brand is not None:
-            product_dict['brand'] = brand.model_dump()
+            product_dict["brand"] = brand.model_dump()
 
         response_products.append(ProductPublic(**product_dict))
 
@@ -80,14 +87,15 @@ async def create_product(
     photo: UploadFile = File(...),
     brand_id: Optional[uuid.UUID] = Form(None),
     category_ids: Optional[List[uuid.UUID]] = Form(None),
-    db: DbSession = None
+    db: DbSession = None,
+    user: AdminUser = None,
 ):
     product_data = ProductCreate(
         name=name,
         description=description,
         price=price,
         stock_quantity=stock_quantity,
-        brand_id=brand_id
+        brand_id=brand_id,
     )
 
     product = Product.from_orm(product_data)
@@ -101,7 +109,9 @@ async def create_product(
 
     if category_ids:
         for category_id in category_ids:
-            association = AssociationProductCategory(product_id=product.id, category_id=category_id)
+            association = AssociationProductCategory(
+                product_id=product.id, category_id=category_id
+            )
             db.add(association)
         db.commit()
 
@@ -120,12 +130,12 @@ async def read_product(product_id: uuid.UUID, db: DbSession):
     product_dict = product.model_dump()
     all_photos = []
     all_photos.extend(photo for photo in additional_photos)
-    product_dict['photos'] = all_photos
+    product_dict["photos"] = all_photos
 
     brand_query = select(Brand).where(Brand.id == product.brand_id)
     brand = db.exec(brand_query).first()
     if brand is not None:
-        product_dict['brand'] = brand.model_dump()
+        product_dict["brand"] = brand.model_dump()
 
     return ProductPublic(**product_dict)
 
@@ -140,7 +150,8 @@ async def update_product(
     photo: Optional[UploadFile] = File(None),
     brand_id: Optional[uuid.UUID] = Form(None),
     category_ids: Optional[List[uuid.UUID]] = Form(None),
-    db: DbSession = None
+    db: DbSession = None,
+    user: AdminUser = None,
 ):
     product = db.exec(select(Product).where(Product.id == product_id)).first()
     if product:
@@ -159,9 +170,15 @@ async def update_product(
             product.brand_id = brand_id
 
         if category_ids is not None:
-            db.exec(delete(AssociationProductCategory).where(AssociationProductCategory.product_id == product_id))
+            db.exec(
+                delete(AssociationProductCategory).where(
+                    AssociationProductCategory.product_id == product_id
+                )
+            )
             for category_id in category_ids:
-                association = AssociationProductCategory(product_id=product_id, category_id=category_id)
+                association = AssociationProductCategory(
+                    product_id=product_id, category_id=category_id
+                )
                 db.add(association)
 
         db.add(product)
@@ -171,12 +188,11 @@ async def update_product(
 
 
 @router.delete("/{product_id}", response_model=Product)
-async def delete_product(product_id: uuid.UUID, db: DbSession):
+async def delete_product(product_id: uuid.UUID, db: DbSession, user: AdminUser = None):
     product = db.exec(select(Product).where(Product.id == product_id)).first()
     if not product:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Product not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
 
     db.delete(product)
@@ -187,7 +203,6 @@ async def delete_product(product_id: uuid.UUID, db: DbSession):
 
 @router.get("/{product_id}/stock")
 async def stream_product_stock(product_id: uuid.UUID, db: DbSession):
-
     async def stock_generator():
         while True:
             product = db.exec(select(Product).where(Product.id == product_id)).first()

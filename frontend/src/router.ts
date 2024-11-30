@@ -7,20 +7,18 @@ export const router = createRouter({
   routes,
 })
 
-// router.beforeEach((to, from, next) => {
-//   const authStore = useAuthStore()
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
 
-//   if (to.meta.guest && authStore.user && to.path !== '/') {
-//     next('/')
-//     return
-//   }
-//   if (!to.meta.guest && !authStore.user && to.path !== '/auth/login') {
-//     next('/auth/login')
-//     return
-//   }
+  if (to.fullPath.includes('admin')) {
+    if (!authStore.user) {
+      next('/auth/login')
+      return
+    }
+  }
 
-//   return next()
-// })
+  return next()
+})
 
 // This will update routes at runtime without reloading the page
 if (import.meta.hot) {

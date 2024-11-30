@@ -39,6 +39,7 @@ def get_access_token(user: User):
             "sub": str(user.uid),
             "email": user.email,
             "name": user.name,
+            "is_admin": user.is_admin,
             # TODO: make configurable?
             "exp": datetime.now(timezone.utc) + timedelta(minutes=5),
         },
