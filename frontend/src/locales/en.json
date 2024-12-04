@@ -19,7 +19,7 @@
   "orderErrorServer": "Order failed, server error",
   "orderErrorUnknown": "Order failed, unknown error",
   "register_now": "Register now",
-  "username": "Username",
+  "username": "Email",
   "password": "Password",
   "confirm_password": "Confirm password",
   "email": "Email",
