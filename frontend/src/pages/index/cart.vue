@@ -110,7 +110,7 @@ function order() {
       </CardContent>
       <CardFooter class="flex justify-end">
         <Button :disabled="cartStore.count === 0" @click="order">
-          TODO: {{ t('checkout') }}
+              {{ t('checkout') }}
         </Button>
       </CardFooter>
     </Card>

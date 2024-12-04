@@ -61,6 +61,7 @@
           <p class="font-bold text-sm">LIVE</p>
         </span>
         <Button
+          @click="addToCart"
           :disabled="isOutOfStock(product.stock_quantity)"
           class="absolute right-0"
         >
@@ -108,6 +109,9 @@ import { defineProps, ref, watch, reactive, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import gsap from 'gsap'
+import { useCartStore } from '@/stores/cart'
+import { computed } from 'vue'
+
 
 const { t } = useI18n()
 
@@ -194,6 +198,19 @@ eventSource.addEventListener('stockUpdate', function (event) {
 eventSource.onerror = (error) => {
     console.error('EventSource failed', error)
     eventSource.close()
+}
+
+const cartStore = useCartStore()
+
+const cartItem = computed(() => cartStore.getCartItem(route.params.id))
+
+function addToCart() {
+  cartStore.addCartItem({
+    product_id: route.params.id,
+    // @ts-ignore
+    product: product,
+    quantity: 1,
+  })
 }
 
 onBeforeUnmount(() => {

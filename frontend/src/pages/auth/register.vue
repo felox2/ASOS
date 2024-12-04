@@ -42,7 +42,7 @@ async function tryRegister() {
   <div class="h-screen flex items-center justify-center">
     <Card class="max-w-md w-full">
       <CardHeader>
-        <CardTitle class="text-2xl">{{ t('login') }}</CardTitle>
+        <CardTitle class="text-2xl">{{ t('register') }}</CardTitle>
       </CardHeader>
       <CardContent>
         <form @submit.prevent="tryRegister">

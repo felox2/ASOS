@@ -70,6 +70,11 @@ async function tryLogin() {
           </div>
         </form>
       </CardContent>
+      <div class="flex justify-center m-2">
+        <RouterLink to="/auth/register" class="text-blue-500 hover:underline">
+          {{ t('register_now') }}
+        </RouterLink>
+      </div>
     </Card>
   </div>
 </template>
